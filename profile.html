@@ -1,0 +1,88 @@
+<?php
+session_start();
+include './db_con.php';
+$msg = "";
+if (isset($_POST['bpost'])) {
+    $notice = $_POST['tpost'];
+    $name = $_SESSION['uname'];
+
+    $qry = "insert into profile(username,post)values('$name','$notice')";
+
+    mysqli_query($link, $qry);
+    if (mysqli_affected_rows($link) > 0) {
+        $msg = "Succesfully Added";
+    } else {
+        $msg = "Not Added";
+    }
+    mysqli_close($link);
+}
+?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>social-media</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+
+        </style>
+    </head>
+    <body class="bg-success">
+        <div class="container-fluid">
+            <div class="row" style="background-color: #8c918d; height: auto">
+                <div class="col-sm-4">
+                    <label style='padding:20px; color:white; font-family:cursive'>
+                        <?php
+                        if (isset($_SESSION['uname'])) {
+                        echo  $_SESSION['uname'];
+                        }
+                        ?>
+                    </label>
+                </div>
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <div style="float:right;margin:10px">
+                        <a href='friends.html' class="btn" style="color:white;background-color:#b1b5b2;padding-left:25px;padding-right:25px;margin-right:20px;">Friends</button>
+                            <a href='logout.php' onclick='return confirm(\"Are you sure to log out?\")' class="btn" style="color:white;background-color:#b1b5b2;padding-left:25px;padding-right:25px;margin-left:20px;">Logout</a>
+                    </div>  
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-7">
+                    <div style="margin:30px;">
+                        <h4 style="font-weight:bold;margin-bottom:50px">Updates</h4>
+                        <div style="margin-bottom:15px;">
+                            <?php
+                            include './db_con.php';
+                            $qry = "select * from profile";
+                            $resultset = mysqli_query($link, $qry);
+                            if (mysqli_num_rows($resultset) > 0) {
+                            echo "<p>";
+                            while ($r = mysqli_fetch_array($resultset)) {
+                            echo "<p style='font-weight:bold;color:green;'>Update from <em>$r[1]</em></p>";
+                            echo "<p style='border:1px solid black;padding:10px;text-align: justify;'>$r[2]</p>";
+                            }
+                            echo "</p>";
+                            } else {
+                            echo "<h2 style='color:white; text-align:center'>NO Record Found !!!!</h2>";
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-5">
+                    <div style="margin:30px;">
+                        <h4>Post a new update.....</h4>
+                        <form method='post'>
+                        <textarea  class="form-control" required placeholder="Write something.." style="height:150px" name="tpost"></textarea>
+                        <button type="submit" class="btn btn-success" style="color:white;;padding-left:25px;padding-right:25px;margin:20px;float:right;" name="bpost">Post</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

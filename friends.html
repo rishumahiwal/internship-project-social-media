@@ -1,0 +1,184 @@
+<?php
+session_start();
+include './db_con.php';
+$msg2 = "";
+if (isset($_POST['addfnd'])) {
+$username = $_SESSION['uname'];
+$frequest = $_POST['addfnd'];
+$qry = "select * from requests where username1='$username'and frequest='$frequest'";
+$result = mysqli_query($link, $qry);
+if (mysqli_num_rows($result) > 0) {
+
+$msg2 = "<font style='colour:red;'>Already send!!</font>";
+
+} else {
+$qry = "insert into requests(username1,frequest)values('$username','$frequest')";
+mysqli_query($link, $qry);
+if (mysqli_affected_rows($link) > 0) {
+$msg2 = "Request Send !!!!";
+} else {
+$msg2 = "Error in sending request .....";
+}
+}
+mysqli_close($link);
+}
+
+$msg3 = "";
+
+if (isset($_POST['btn1'])) {
+$username = $_SESSION['uname'];
+$frequest = $_POST['btn1'];
+$qry = "select * from friends where username1='$username'and request='$frequest'";
+$result = mysqli_query($link, $qry);
+if (mysqli_num_rows($result) > 0) {
+
+$msg3 = "<font style='colour:red;'>Already your friend!!</font>";
+
+} else {
+$qry = "insert into friends(username1,request)values('$username','$frequest')";
+mysqli_query($link, $qry);
+if (mysqli_affected_rows($link) > 0) {
+$msg3 = "Added as friend !!!!";
+} else {
+$msg3 = "Error in sending request .....";
+}
+}
+mysqli_close($link);
+}
+?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>social-media</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+
+        </style>
+    </head>
+    <body class="bg-success">
+        <div class="container-fluid">
+            <div class="row" style="background-color: #8c918d; height: auto">
+                <div class="col-sm-4">
+                    <label style='padding:20px; color:white; font-family:cursive'><a href="profile.html" style='color:white;text-decoration: none'>
+                            <?php
+                            if (isset($_SESSION['uname'])) {
+                            echo  $_SESSION['uname'];
+                            }
+                            ?>
+                        </a></label>
+                </div>
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <div style="float:right;margin:10px">
+                        <button type='none' class="btn btn-success" style="color:white;padding-left:25px;padding-right:25px;margin-right:20px;">Friends</button>
+                        <a href='logout.php' onclick='return confirm(\"Are you sure to log out?\")' class="btn" style="color:white;background-color:#b1b5b2;padding-left:25px;padding-right:25px;margin-left:20px;">Logout</a>
+                    </div>  
+                </div>
+            </div>
+            <?php echo $msg2; ?>
+            <?php echo $msg3; ?>
+            <div class="row">
+                <div class="col-sm-5">
+                    <div style="margin:30px;">
+                        <h4 style="font-weight:bold;margin-bottom:50px;color:green;text-align: center;">Friend Requests</h4>
+                        <div class="row" style="margin-bottom:15px;">
+                            <form method="post">
+                                <?php
+                                include './db_con.php';
+                                $qry = "select * from requests";
+                                $resultset = mysqli_query($link, $qry);
+                                if (mysqli_num_rows($resultset) > 0) {
+                                while ($r = mysqli_fetch_array($resultset)) {
+                                echo "<div class='col-sm-6'>";
+                                if (isset($_SESSION['uname'])) {
+                                if ($_SESSION['uname'] == $r[2]) {
+                                echo "<p style='margin:20px;text-align:center;font-weight:bold;'>$r[1]</p>";
+                                }
+                                }
+                                echo "</div>";
+                                echo "<div class='col-sm-6' style='text-align:center;'>";
+                                if (isset($_SESSION['uname'])) {
+                                if ($_SESSION['uname'] == $r[2]) {
+                                echo "<button type='submit' class='btn btn-success' style='margin:20px;' name='btn1'value='$r[1]'>yes</button>";
+                                echo "<button type='submit' class='btn btn-success' style='color:white;background-color:#b1b5b2;margin:10px;' name='btn2' value='no'>No</button>";
+                                }
+                                }
+                                echo "</div>";  
+                                }
+                                } else {
+                                echo "<h2 style='color:white; text-align:center'>NO Record Found !!!!</h2>";
+                                }
+                                ?>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div style="margin:30px;">
+                        <h4 style="font-weight:bold;margin-bottom:50px;color:green;text-align: center;">Friends</h4>
+                        <div class="row" style="margin-bottom:15px;text-align:center;">
+                            <?php
+                            include './db_con.php';
+                            $qry = "select * from requests";
+                            $resultset = mysqli_query($link, $qry);
+                            if (mysqli_num_rows($resultset) > 0) {
+                                while ($r = mysqli_fetch_array($resultset)) {
+                                    if (isset($_SESSION['uname'])) {
+                                    if ($_SESSION['uname'] == $r[2]) {
+                                    echo "<p style='margin:30px;text-align:center;font-weight:bold;'>$r[1]</p>";
+                                    }
+                                    }
+                                }
+                            } else {
+                            echo "<h2 style='color:white; text-align:center'>NO Record Found !!!!</h2>";
+                            }
+                            ?>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div style="margin:30px;">
+                        <h4 style="font-weight:bold;margin-bottom:50px;color:green;text-align: center;">All Users</h4>
+                        <div class="row" style="margin-bottom:15px;text-align:center;">
+                            <form method="post">
+                                <?php
+                                include './db_con.php';
+                                $qry = "select * from signup";
+                                $resultset = mysqli_query($link, $qry);
+                                if (mysqli_num_rows($resultset) > 0) {
+                                while ($r = mysqli_fetch_array($resultset)) {
+                                echo "<div class='col-sm-8'>";
+                                if (isset($_SESSION['uid'])) {
+                                if ($_SESSION['uid'] != $r[0]) {
+                                echo "<p style='margin:20px;text-align:center;font-weight:bold;'>$r[1]</p>";
+                                }
+                                }
+                                echo "</div>";
+                                echo "<div class='col-sm-4' style='text-align:center;'>";
+                                if (isset($_SESSION['uid'])) {
+                                if ($_SESSION['uid'] != $r[0]) {
+                                echo "<button type='submit' class='btn btn-success' style='margin:10px;font-weight:bold;' name='addfnd' value='$r[1]'>+</button>";
+                                }
+                                }
+                                echo "</div>";  
+                                }
+                                } else {
+                                echo "<h2 style='color:white; text-align:center'>NO Record Found !!!!</h2>";
+                                }
+                                ?>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
